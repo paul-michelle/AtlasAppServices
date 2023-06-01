@@ -1,7 +1,3 @@
-const { Chalk } = require("chalk");
-
-const chalk = new Chalk();
-
 exports = changeEvent => {
   /*
     A Database Trigger will always call a function with a changeEvent.
@@ -42,6 +38,9 @@ exports = changeEvent => {
 
     Learn more about http client here: https://www.mongodb.com/docs/atlas/app-services/functions/context/#context-http
   */
+  const { Chalk } = require("chalk");
+  const chalk = new Chalk();
+
   const client = context.services.get("mongodb-atlas");
   const collection = client.db("sample_geospatial").collection("changeEvents");
   const insertedId = collection.insertOne(changeEvent);
