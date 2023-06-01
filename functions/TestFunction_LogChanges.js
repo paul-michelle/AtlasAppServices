@@ -1,4 +1,8 @@
-exports = function(changeEvent) {
+import {Chalk} from "chalk";
+
+const chalk = new Chalk();
+
+exports = changeEvent => {
   /*
     A Database Trigger will always call a function with a changeEvent.
     Documentation on ChangeEvents: https://www.mongodb.com/docs/manual/reference/change-events
@@ -38,7 +42,8 @@ exports = function(changeEvent) {
 
     Learn more about http client here: https://www.mongodb.com/docs/atlas/app-services/functions/context/#context-http
   */
-    const collection = context.services.get("mongodb-atlas").db("sample_geospatial").collection("changeEvents");
+    const client = context.services.get("mongodb-atlas");
+    const collection = client.db("sample_geospatial").collection("changeEvents");
     const insertedId = collection.insertOne(changeEvent);
-    console.log(`A change to the collection has been saved as a document with _id ${insertedId}`);
+    console.log(chalk.green(`A change to the collection has been saved as a document with _id ${insertedId}`));
 };
