@@ -41,5 +41,5 @@ exports = changeEvent => {
   const client = context.services.get("mongodb-atlas");
   const collection = client.db("sample_geospatial").collection("changeEvents");
   const insertedId = collection.insertOne(changeEvent);
-  console.log(chalk.green(`A change to the collection has been saved as a document with _id ${insertedId}`));
+  console.log(`A change to the collection has been saved as a document with _id ${insertedId}`);
 };
