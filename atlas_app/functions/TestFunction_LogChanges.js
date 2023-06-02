@@ -1,3 +1,9 @@
+const DB_NAME = 'sample_geospatial';
+const COLLECTION_NAME = "changeEvents";
+
+const cout = (msg) => void console.log(msg);
+
+
 exports = changeEvent => {
   /*
     A Database Trigger will always call a function with a changeEvent.
@@ -39,7 +45,7 @@ exports = changeEvent => {
     Learn more about http client here: https://www.mongodb.com/docs/atlas/app-services/functions/context/#context-http
   */
   const client = context.services.get("mongodb-atlas");
-  const collection = client.db("sample_geospatial").collection("changeEvents");
+  const collection = client.db(DB_NAME).collection(COLLECTION_NAME);
   const insertedId = collection.insertOne(changeEvent);
-  console.log(`A change to the collection has been saved as a document with _id ${insertedId}`);
+  cout(`A change to the collection has been saved as a document with _id ${insertedId}`);
 };
