@@ -1,0 +1,53 @@
+name: Lint And Build
+
+on:
+  push:
+    paths:
+      - src/**/*.js
+      - '**/package.json'
+      - .github/workflows/*.yaml
+
+    branches:
+      - main
+      - develop
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: === CHECK OUT ===
+        uses: actions/checkout@v3
+
+      - name: === PROCURE NODE ===
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.13.0
+
+      - name: === PROCURE PNPM ===
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.0
+          run_install: false
+
+      - name: === FIGURE PNPM DIR ===
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    
+      - name: === CACHE/RESTORE 3RD PARTY DEPS ===
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: === INSTALL DEPS ===
+        if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+        run: pnpm install
+
+      - name: === LINT ===
+        run: pnpm run lint
