@@ -1,7 +1,10 @@
 const cout = (msg) => void console.log(msg);
+const isObject = (a) => typeof a === 'object' && !Array.isArray(a) && a !== null;
 const client = context.services.get("mongodb-atlas");
 
+
 exports = async changeEvent => {
+  if (!isObject(changeEvent)) return;
   const insertedId = await client
     .db("sample_geospatial")
     .collection("changeEvents")
