@@ -1,0 +1,41 @@
+{
+    "properties": {
+        "_id": {
+            "bsonType": "object",
+            "properties": {
+                "_data": {
+                    "bsonType": "string"
+                }
+            }
+        },
+        "clusterTime": {
+            "bsonType": "timestamp"
+        },
+        "documentKey": {
+            "bsonType": "object",
+            "properties": {
+                "_id": {
+                    "bsonType": "objectId"
+                }
+            }
+        },
+        "ns": {
+            "bsonType": "object",
+            "properties": {
+                "coll": {
+                    "bsonType": "string"
+                },
+                "db": {
+                    "bsonType": "string"
+                }
+            }
+        },
+        "operationType": {
+            "bsonType": "string"
+        },
+        "wallTime": {
+            "bsonType": "date"
+        }
+    },
+    "title": "changeEvent"
+}
