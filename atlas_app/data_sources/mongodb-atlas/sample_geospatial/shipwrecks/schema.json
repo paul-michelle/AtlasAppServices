@@ -1,0 +1,50 @@
+{
+    "title": "shipwreck",
+    "bsonType": "object",
+    "required": [
+        "_id",
+        "name",
+        "when",
+        "captain"
+    ],
+    "properties": {
+        "_id": {
+            "bsonType": "objectId"
+        },
+        "name": {
+            "bsonType": "string"
+        },
+        "when": {
+            "bsonType": "date"
+        },
+        "captain": {
+            "bsonType": "object",
+            "title": "person",
+            "required": [
+                "firstName",
+                "lastName",
+                "yearOfExperience"
+            ],
+            "properties": {
+                "firstName": {
+                    "bsonType": "string"
+                },
+                "lastName": {
+                    "bsonType": "string"
+                },
+                "yearOfExperience": {
+                    "oneOf": [
+                        {
+                            "bsonType": "string",
+                            "maxLengtht": 2
+                        },
+                        {
+                            "bsonType": "int",
+                            "maximum": 99
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
