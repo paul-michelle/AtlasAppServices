@@ -9,7 +9,7 @@
         "type": "custom-token",
         "config": {
             "audience": [],
-            "jwkURI": "https://stytch.com/docs/api/jwks-get",
+            "jwkURI": "https://test.stytch.com/v1/sessions/jwks/project-test-2e6ba10d-beb7-4846-bc6c-64c02de91d8d",
             "requireAnyAudience": false,
             "signingAlgorithm": "",
             "useJWKURI": true
