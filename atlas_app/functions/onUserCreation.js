@@ -22,9 +22,10 @@ exports = async function onUserCreation(user) {
   try {
     await customUserDataCollection.insertOne({
       // Save the user's account ID to your configured user_id_field
-      user_account_id: user.id,
+      realmUserId: user.id,
       // Store any other user data you want
       favorite_color: "blue",
+      user
     });
   } catch (e) {
     console.error(`Failed to create custom user data document for user:${user.id}`);
