@@ -24,8 +24,8 @@ exports = async function onUserCreation(user) {
       // Save the user's account ID to your configured user_id_field
       realmUserId: user.id,
       // Store any other user data you want
-      favorite_color: "blue",
-      user
+      preferredMode: "dark",
+      created: new Date()
     });
   } catch (e) {
     console.error(`Failed to create custom user data document for user:${user.id}`);
