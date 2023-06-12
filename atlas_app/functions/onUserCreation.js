@@ -23,12 +23,18 @@ exports = async function onUserCreation(user) {
     await customUserDataCollection.insertOne({
       // Save the user's account ID to your configured user_id_field
       realmUserId: user.id,
+      email: user.data.email,
+      name: user.data.name,
+      team: "",
+      isTeamAdmin: "",
+      isGlobalAdmin: "",
+      subscribedTo: [],
       // Store any other user data you want
       preferredMode: "dark",
       created: new Date()
     });
   } catch (e) {
     console.error(`Failed to create custom user data document for user:${user.id}`);
-    throw e
+    throw e;
   }
-}
+};
