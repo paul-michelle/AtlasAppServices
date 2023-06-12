@@ -3,5 +3,20 @@
         "name": "api-key",
         "type": "api-key",
         "disabled": true
+    },
+    "custom-token": {
+        "name": "custom-token",
+        "type": "custom-token",
+        "config": {
+            "audience": [],
+            "jwkURI": "https://stytch.com/docs/api/jwks-get",
+            "requireAnyAudience": false,
+            "signingAlgorithm": "",
+            "useJWKURI": true
+        },
+        "secret_config": {
+            "signingKeys": []
+        },
+        "disabled": false
     }
 }
