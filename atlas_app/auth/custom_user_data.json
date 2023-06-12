@@ -1,3 +1,8 @@
 {
-    "enabled": false
+    "enabled": true,
+    "mongo_service_name": "mongodb-atlas",
+    "database_name": "sample_airbnb",
+    "collection_name": "users",
+    "user_id_field": "realmUserId",
+    "on_user_creation_function_name": "onUserCreation"
 }
