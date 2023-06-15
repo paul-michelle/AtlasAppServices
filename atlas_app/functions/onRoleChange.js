@@ -4,7 +4,7 @@ exports = function(changeEvent) {
   if (changeEvent.operationType === "update") {
     for (const key in changeEvent.updateDescription.updatedFields) {
       if (!key.includes("permissions")) continue;
-      const perms = changeEvent.changeEvent.permissions;
+      const perms = changeEvent.fullDocument.permissions;
       console.log(perms);
       
     }
