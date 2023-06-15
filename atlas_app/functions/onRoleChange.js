@@ -2,7 +2,7 @@ exports = function(changeEvent) {
   const {fullDocument, operationType} = changeEvent;
 
   if (operationType === "update") {
-    for (const key of changeEvent.updateDescription.updatedFields) {
+    for (const key in changeEvent.updateDescription.updatedFields) {
       console.log(key);
     }
     console.log("role has beenupdated");
