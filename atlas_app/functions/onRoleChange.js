@@ -1,4 +1,8 @@
 exports = function(changeEvent) {
-  const event = JSON.stringify(changeEvent.fullDocument, null, 2);
-  console.log(event);
+  const {fullDocument} = changeEvent;
+  console.log({fullDocument: JSON.stringify(fullDocument, null, 2)});
+  
+  
+  console.log({changeEvent: JSON.stringify(changeEvent, null, 2)});
+  
 };
