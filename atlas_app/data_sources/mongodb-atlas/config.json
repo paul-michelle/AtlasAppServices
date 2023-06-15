@@ -3,6 +3,13 @@
     "type": "mongodb-atlas",
     "config": {
         "clusterName": "RehabCluster",
+        "namespacePreimageConfigs": [
+            {
+                "collectionName": "roles",
+                "dbName": "sample_airbnb",
+                "recordPreimages": true
+            }
+        ],
         "readPreference": "primary",
         "wireProtocolEnabled": false
     },

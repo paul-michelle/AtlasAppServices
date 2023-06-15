@@ -6,5 +6,9 @@
     {
         "name": "onUserCreation",
         "private": false
+    },
+    {
+        "name": "onRoleChange",
+        "private": true
     }
 ]
