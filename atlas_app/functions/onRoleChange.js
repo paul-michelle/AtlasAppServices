@@ -3,7 +3,7 @@ exports = function(changeEvent) {
 
   if (operationType === "update") {
     for (const key in changeEvent.updateDescription.updatedFields) {
-      console.log(key);
+      if (key.includes("permissions")) console.log("permissions have been updated");
     }
     console.log("role has beenupdated");
     console.log("fullDocument", JSON.stringify(fullDocument, null, 2));
