@@ -1,12 +1,13 @@
 exports = function(changeEvent) {
-  const {fullDocument, operationType} = changeEvent;
+  const {fullDocument} = changeEvent;
 
-  if (operationType === "update") {
+  if (changeEvent.operationType === "update") {
     for (const key in changeEvent.updateDescription.updatedFields) {
-      if (key.includes("permissions")) console.log("permissions have been updated");
+      if (!key.includes("permissions")) continue;
+      const perms = changeEvent.changeEvent.permissions;
+      console.log(perms);
+      
     }
-    console.log("role has beenupdated");
-    console.log("fullDocument", JSON.stringify(fullDocument, null, 2));
-    console.log("changeEvent", JSON.stringify(changeEvent, null, 2));
+    console.log("updateDescription", JSON.stringify(changeEvent.updateDescription, null, 2));
   }
 };
