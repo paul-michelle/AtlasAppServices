@@ -3,6 +3,7 @@ const updateRule = async (collName, roleName, collRolePerms) => {
 };
 
 exports = async (changeEvent) => {
+  console.log("changeEvent", JSON.stringify(changeEvent, null, 2));
   const {fullDocument} = changeEvent;
 
   if (changeEvent.operationType === "update") {
