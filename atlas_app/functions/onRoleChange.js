@@ -1,3 +1,4 @@
 exports = function(changeEvent) {
-  return JSON.stringify(changeEvent, null, 2)
+  const event = JSON.stringify(changeEvent, null, 2);
+  cosnole.log(event);
 };
