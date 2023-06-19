@@ -175,8 +175,9 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
     const action = updatedRule.roles ? saveRule : deleteRule;
+    console.log(`chosen action: ${action.name}`);
     const result = await action(updatedRule, token);
-    return { result, actionTaken: action.name };
+    return { result };
 };
 
 const onRoleInsert = async changeEvent => {
