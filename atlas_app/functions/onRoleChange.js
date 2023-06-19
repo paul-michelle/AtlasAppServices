@@ -32,6 +32,10 @@ const transport = {
         .then(JSON.parse)
 };
 
+const utils = {
+  toString: o => JSON.stringify(o),
+};
+
 const adminLogin = async (username = '', apiKey = '') => {
     const url = config.ADMIN_API.LOGIN;
     const body = {
@@ -236,6 +240,6 @@ exports = async changeEvent => {
     config = await buildConfig();
     console.log(`dispatching change event to ${handler.name} handler`);
     const res = await handler(changeEvent);
-    console.log(JSON.stringify(res));
+    console.log(`response from handler: ${utils.toString(res)}`);
     return res;
 };
