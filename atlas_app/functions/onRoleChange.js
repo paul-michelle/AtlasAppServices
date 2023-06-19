@@ -29,7 +29,11 @@ const transport = {
     get: async ({ url, headers = {} }) => context.http
         .get({ url, headers })
         .then(resp => resp.body.text())
-        .then(JSON.parse)
+        .then(JSON.parse),
+    delete: async ({ url, headers = {} }) => context.http
+        .delete({ url, headers })
+        .then(resp => resp.body.text())
+        .then(JSON.parse),
 };
 
 const utils = {
@@ -145,6 +149,17 @@ const saveRule = async (rule, token = '') => {
     return resp;
 };
 
+const deleteRule = async ({ _id }, token = '') => {
+    if (token === '') {
+        const { access_token } = await adminLogin();
+        token = access_token;
+    }
+    const url = `${config.ADMIN_API.RULES}/${_id}`;
+    const headers = { "Authorization": [`Bearer ${token}`] };
+    const resp = await transport.delete({ url, headers });
+    return resp;
+};
+
 const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     const insertRuleOrReportThat = async msg => {
         if (!upsert) return { result: msg };
@@ -159,7 +174,8 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     const rule = await getRuleById(ruleId, token);
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
-    const result = await saveRule(updatedRule, token);
+    const action = updatedRule.roles ? saveRule : deleteRule;
+    const result = await action(updatedRule, token);
     return { result };
 };
 
