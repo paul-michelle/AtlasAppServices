@@ -234,5 +234,7 @@ exports = async changeEvent => {
     const handler = handlers[changeEvent.operationType];
     if (!handler) throw new Error("not supported");
     config = await buildConfig();
-    return handler(changeEvent);
+    console.log(`dispatching change event to ${handler.name} handler`);
+    const res = await handler(changeEvent);
+    return res;
 };
