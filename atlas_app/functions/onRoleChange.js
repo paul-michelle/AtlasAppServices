@@ -236,5 +236,6 @@ exports = async changeEvent => {
     config = await buildConfig();
     console.log(`dispatching change event to ${handler.name} handler`);
     const res = await handler(changeEvent);
+    console.log(JSON.stringify(res));
     return res;
 };
