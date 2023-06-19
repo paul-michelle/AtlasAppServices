@@ -38,6 +38,12 @@ const transport = {
 
 const utils = {
   toString: o => JSON.stringify(o),
+  isEmpty: o => {
+    if (typeof o === "string") return o === "";
+    if (Array.isArray(o)) return o.length === 0;
+    if (typeof o === "object") return Object.keys(o).length === 0;
+    throw new Error("not supported");
+  },
 };
 
 const adminLogin = async (username = '', apiKey = '') => {
@@ -174,8 +180,7 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     const rule = await getRuleById(ruleId, token);
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
-    const action = updatedRule.roles ? saveRule : deleteRule;
-    console.log(`chosen action: ${action.name}`);
+    const action = utils.isEmpty(updatedRule.roles) ? deleteRule : saveRule;
     const result = await action(updatedRule, token);
     return { result };
 };
