@@ -176,7 +176,7 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
     const action = updatedRule.roles ? saveRule : deleteRule;
     const result = await action(updatedRule, token);
-    return { result };
+    return { result, actionTaken: action.name };
 };
 
 const onRoleInsert = async changeEvent => {
