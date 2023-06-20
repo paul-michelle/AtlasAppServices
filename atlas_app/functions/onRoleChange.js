@@ -96,10 +96,9 @@ const getRuleId = async collName => {
     return rule._id || -1;
 };
 
-const getRuleById = async (ruleId, token) => {
+const getRuleById = async ruleId => {
     const url = `${config.ADMIN_API.RULES}/${ruleId}`;
-    const headers = { "Authorization": [`Bearer ${token}`] };
-    const resp = await transport.get({ url, headers });
+    const resp = await httpClient.get(url);
     return resp.error ? null : resp;
 };
 
@@ -186,7 +185,7 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     const { access_token: token } = await adminLogin();
     const ruleId = await getRuleId(collName);
     if (ruleId === -1) return insertRuleOrReportThat("rule not found");
-    const rule = await getRuleById(ruleId, token);
+    const rule = await getRuleById(ruleId);
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
     const action = utils.isEmpty(updatedRule.roles) ? deleteRule : saveRule;

@@ -1,0 +1,21 @@
+{
+    "collection": "credits",
+    "database": "sample_airbnb",
+    "roles": [
+        {
+            "name": "Homeowner",
+            "apply_when": {
+                "%%user.custom_data.role": "Homeowner"
+            },
+            "document_filters": {
+                "write": true,
+                "read": true
+            },
+            "read": true,
+            "write": true,
+            "insert": false,
+            "delete": false,
+            "search": false
+        }
+    ]
+}
