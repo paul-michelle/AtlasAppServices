@@ -46,6 +46,21 @@
             "insert": false,
             "delete": false,
             "search": false
+        },
+        {
+            "name": "ImportantRole20544112",
+            "apply_when": {
+                "%%user.custom_data.role": "ImportantRole20544112"
+            },
+            "document_filters": {
+                "write": false,
+                "read": true
+            },
+            "read": true,
+            "write": false,
+            "insert": false,
+            "delete": false,
+            "search": false
         }
     ]
 }
