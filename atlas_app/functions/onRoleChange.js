@@ -59,7 +59,6 @@ const utils = {
 
 const getRuleId = async collName => {
     const rules = await httpClient.get(config.ADMIN_API.RULES);
-    console.log(utils.toString(rules))
     if (!rules) return -1;
     const rule = rules.filter(
         rule => rule.database === config.DATABASE && rule.collection === collName
@@ -169,6 +168,7 @@ const onRoleUpdate = async changeEvent => {
     const tasks = [];
 
     for (const key in changeEvent.updateDescription.updatedFields) {
+        console.log(`processing updated field: ${key}`);
         if (!key.startsWith("permissions")) continue;
         const collName = key.split(".")[1];
         const collRolePerms = changeEvent.fullDocument.permissions[collName];
@@ -334,6 +334,7 @@ DELETE
 
 
 UPDATE
+1) ADD permission to role without permissions field:
 
 REPLACE
 

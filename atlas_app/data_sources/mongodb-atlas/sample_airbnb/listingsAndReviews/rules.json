@@ -1,19 +1,19 @@
 {
-    "collection": "lands",
+    "collection": "listingsAndReviews",
     "database": "sample_airbnb",
     "roles": [
         {
-            "name": "Landlord",
+            "name": "TestRole",
             "apply_when": {
-                "%%user.custom_data.role": "Landlord"
+                "%%user.custom_data.role": "TestRole"
             },
             "document_filters": {
-                "write": true,
+                "write": false,
                 "read": true
             },
             "read": true,
-            "write": true,
-            "insert": true,
+            "write": false,
+            "insert": false,
             "delete": false,
             "search": false
         }

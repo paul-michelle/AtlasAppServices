@@ -15,7 +15,7 @@
             "write": true,
             "insert": true,
             "delete": false,
-            "search": false
+            "search": true
         }
     ]
 }
