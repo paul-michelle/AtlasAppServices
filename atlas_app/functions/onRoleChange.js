@@ -180,7 +180,7 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
         if (!upsert) return { result: msg };
         const role = buildRole(roleName, collRolePerms);
         const newRule = buildRule([role], collName);
-        const result = await insertRule(newRule, token);
+        const result = await insertRule(newRule);
         return { result };
     };
     const { access_token: token } = await adminLogin();
