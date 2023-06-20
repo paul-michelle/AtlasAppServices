@@ -48,9 +48,9 @@
             "search": false
         },
         {
-            "name": "ImportantRole20544112",
+            "name": "ImportantRRRole205",
             "apply_when": {
-                "%%user.custom_data.role": "ImportantRole20544112"
+                "%%user.custom_data.role": "ImportantRRRole205"
             },
             "document_filters": {
                 "write": false,

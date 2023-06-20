@@ -85,10 +85,8 @@ const adminLogin = async (username = '', apiKey = '') => {
     return transport.post({ url, body });
 };
 
-const getAllRules = async () => httpClient.get(config.ADMIN_API.RULES);
-
 const getRuleId = async collName => {
-    const rules = await getAllRules();
+    const rules = await httpClient.get(config.ADMIN_API.RULES);
     console.log(utils.toString(rules))
     if (!rules) return -1;
     const rule = rules.filter(
@@ -130,18 +128,7 @@ const buildRole = (roleName, collRolePerms) => {
 
 const buildRule = (roles, collection, database = config.DATABASE) => ({ roles, database, collection });
 
-const insertRule = async (rule, token = '') => {
-    if (token === '') {
-        const { access_token } = await adminLogin();
-        token = access_token;
-    }
-    const resp = await transport.post({
-        url: config.ADMIN_API.RULES,
-        body: rule,
-        headers: { "Authorization": [`Bearer ${token}`] },
-    });
-    return resp;
-};
+const insertRule = async rule => httpClient.post(config.ADMIN_API.RULES, rule);
 
 const updateRoleInRule = (rule, roleName, collRolePerms) => {
     rule.roles = rule.roles || [];
