@@ -151,17 +151,7 @@ const updateRoleInRule = (rule, roleName, collRolePerms) => {
     return rule;
 };
 
-const saveRule = async (rule, token = '') => {
-    if (token === '') {
-        const { access_token } = await adminLogin();
-        token = access_token;
-    }
-    const url = `${config.ADMIN_API.RULES}/${rule._id}`;
-    const headers = { "Authorization": [`Bearer ${token}`] };
-    const resp = await transport.put({ url, body: rule, headers });
-    console.log(JSON.stringify(resp));
-    return resp;
-};
+const saveRule = async rule => httpClient.put(`${config.ADMIN_API.RULES}/${rule._id}`, rule)
 
 const deleteRule = async ({ _id }) => httpClient.delete(`${config.ADMIN_API.RULES}/${_id}`);
 
@@ -180,7 +170,7 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
     const action = utils.isEmpty(updatedRule.roles) ? deleteRule : saveRule;
-    const result = await action(updatedRule, token);
+    const result = await action(updatedRule);
     return { result };
 };
 
