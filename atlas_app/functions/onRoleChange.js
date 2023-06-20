@@ -67,13 +67,13 @@ const transport = {
 };
 
 const utils = {
-  toString: o => JSON.stringify(o),
-  isEmpty: o => {
-    if (typeof o === "string") return o === "";
-    if (Array.isArray(o)) return o.length === 0;
-    if (typeof o === "object") return Object.keys(o).length === 0;
-    throw new Error("not supported");
-  },
+    toString: o => JSON.stringify(o),
+    isEmpty: o => {
+        if (typeof o === "string") return o === "";
+        if (Array.isArray(o)) return o.length === 0;
+        if (typeof o === "object") return Object.keys(o).length === 0;
+        throw new Error("not supported");
+    },
 };
 
 const adminLogin = async (username = '', apiKey = '') => {
@@ -96,10 +96,9 @@ const getRuleId = async collName => {
     return rule._id || -1;
 };
 
-const getRuleById = async (ruleId, token) => {
+const getRuleById = async ruleId => {
     const url = `${config.ADMIN_API.RULES}/${ruleId}`;
-    const headers = { "Authorization": [`Bearer ${token}`] };
-    const resp = await transport.get({ url, headers });
+    const resp = await httpClient.get(url);
     return resp.error ? null : resp;
 };
 
@@ -180,13 +179,13 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
         if (!upsert) return { result: msg };
         const role = buildRole(roleName, collRolePerms);
         const newRule = buildRule([role], collName);
-        const result = await insertRule(newRule, token);
+        const result = await insertRule(newRule);
         return { result };
     };
     const { access_token: token } = await adminLogin();
     const ruleId = await getRuleId(collName);
     if (ruleId === -1) return insertRuleOrReportThat("rule not found");
-    const rule = await getRuleById(ruleId, token);
+    const rule = await getRuleById(ruleId);
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
     const action = utils.isEmpty(updatedRule.roles) ? deleteRule : saveRule;
@@ -275,3 +274,112 @@ exports = async changeEvent => {
     console.log(`response from handler: ${utils.toString(res)}`);
     return res;
 };
+
+/** Testcases:
+
+INSERT
+
+1) INSERT new role without name:
+    [
+    "dispatching change event to onRoleInsert handler",
+    "response from handler: {\"roleName\":\"not found in role document\"}"
+    ]
+
+2.1) INSERT new role with name without permissions:
+    [
+    "dispatching change event to onRoleInsert handler",
+    "response from handler: {\"roleName\":\"Homeowner\",\"collRolePerms\":\"not specified in role document\"}"
+    ]
+
+2.2) INSERT new role with empty permissions:
+    ***
+
+3) INSERT new role with name and some permissions for collection that does NOT exist (Homeowner, can read activities) ...
+    [
+    "dispatching change event to onRoleInsert handler",
+    "response from handler: [{\"collName\":\"collThatDoesNotExists\",\"roleName\":\"Homeowner\",\"result\":{\"_id\":\"64907ba0b4552e3290dd1218\",\"database\":\"SMARTRoofDB",\"collection\":\"collThatDoesNotExists\"}}]"
+    ]
+
+    ... i.e. the rule will be created, though collection is not there.
+ 
+4) INSERT new role with name and some permissions for collection that DOES exist:
+    [
+    "dispatching change event to onRoleInsert handler",
+    "response from handler: [{\"collName\":\"activities\",\"roleName\":\"Homeowner\",\"result\":{\"_id\":\"64908be03224975901b8fe9e\",\"database\":\"SMARTRoofDB\",\"collection\":\"activities\"}}]"
+    ]
+
+5) INSERT new role with perms for numerous collections:
+    [
+        "dispatching change event to onRoleInsert handler",
+        "response from handler: [
+            {\"collName\":\"lead\",\"roleName\":\"Home21323\",\"result\":{\"_id\":\"6490b9f49e288478370379f2\",\"database\":\"SMARTRoofDB\",\"collection\":\"lead\"}},
+            {\"collName\":\"activity\",\"roleName\":\"Home21323\",\"result\":{\"_id\":\"6490b9f49e288478370379f6\",\"database\":\"v\",\"collection\":\"activity\"}},
+            {\"collName\":\"order\",\"roleName\":\"Home21323\",\"result\":{\"_id\":\"6490b9f4663180e2582b32b8\",\"database\":\"SMARTRoofDB\",\"collection\":\"order\"}}
+        ]"
+    ]
+6) INSERT new role with empty array of perms, e.g. { name: "Homeowner", permissions: { activities: [] } } ...
+    [
+    "dispatching change event to onRoleInsert handler",
+    "response from handler: [{\"collName\":\"activities\",\"roleName\":\"Homeowner\",\"result\":{}}]"
+    ]
+
+    ... will result in the following role {
+      "name": "Homeowner",
+      "apply_when": {
+        "%%user.custom_data.role": "Homeowner"
+      },
+      "document_filters": {
+        "write": false,
+        "read": false
+      },
+      "read": false,
+      "write": false,
+      "insert": false,
+      "delete": false,
+      "search": false
+    }
+
+DELETE
+
+1) DELETE role without name:
+    [
+    "dispatching change event to onRoleDelete handler",
+    "response from handler: {\"roleName\":\"not found in role document\"}"
+    ]
+
+2) DELETE role without permissions:
+    [
+    "dispatching change event to onRoleDelete handler",
+    "response from handler: {\"roleName\":\"Homeowner\",\"collRolePerms\":\"not specified in role document\"}"
+    ]
+
+3) DELETE role with name and some permissions for collection that does NOT exist:
+    [
+    "dispatching change event to onRoleDelete handler",
+    "response from handler: [{\"collName\":\"collThatDoesNotExists\",\"roleName\":\"Homeowner\",\"result\":{}}]"
+    ]
+
+  The role gets deleted and, if it was the only one for this rule, rule gets deleted too.
+
+4) DELETE role for collection that DOES exist:
+    [
+    "dispatching change event to onRoleDelete handler",
+    "response from handler: [{\"collName\":\"collThatDoesNotExists\",\"roleName\":\"Homeowner\",\"result\":{}}]"
+    ]
+
+5) DELETE role with perms on numerous collections:
+    [
+        "dispatching change event to onRoleDelete handler",
+        "response from handler: [
+            {\"collName\":\"lead\",\"roleName\":\"Home21323\",\"result\":{}},
+            {\"collName\":\"activity\",\"roleName\":\"Home21323\",\"result\":{}},
+            {\"collName\":\"order\",\"roleName\":\"Home21323\",\"result\":{}}
+        ]"
+    ]
+
+
+UPDATE
+
+REPLACE
+
+*/
