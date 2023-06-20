@@ -47,25 +47,6 @@ const buildHttpClient = async () => {
     return client;
 };
 
-const transport = {
-    post: async ({ url, body, headers = {} }) => context.http
-        .post({ url, body, headers, encodeBodyAsJSON: true })
-        .then(resp => resp.body.text())
-        .then(JSON.parse),
-    put: async ({ url, body, headers = {} }) => context.http
-        .put({ url, body, headers, encodeBodyAsJSON: true })
-        .then(resp => resp.body.text())
-        .then(JSON.parse),
-    get: async ({ url, headers = {} }) => context.http
-        .get({ url, headers })
-        .then(resp => resp.body.text())
-        .then(JSON.parse),
-    delete: async ({ url, headers = {} }) => context.http
-        .delete({ url, headers })
-        .then(resp => resp.body.text())
-        .then(JSON.parse),
-};
-
 const utils = {
     toString: o => JSON.stringify(o),
     isEmpty: o => {
@@ -74,15 +55,6 @@ const utils = {
         if (typeof o === "object") return Object.keys(o).length === 0;
         throw new Error("not supported");
     },
-};
-
-const adminLogin = async (username = '', apiKey = '') => {
-    const url = config.ADMIN_API.LOGIN;
-    const body = {
-        username: username || config.ADMIN_PUBLIC_API_KEY,
-        apiKey: apiKey || config.ADMIN_PRIVATE_API_KEY
-    };
-    return transport.post({ url, body });
 };
 
 const getRuleId = async collName => {
@@ -163,7 +135,6 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
         const result = await insertRule(newRule);
         return { result };
     };
-    const { access_token: token } = await adminLogin();
     const ruleId = await getRuleId(collName);
     if (ruleId === -1) return insertRuleOrReportThat("rule not found");
     const rule = await getRuleById(ruleId);
@@ -273,7 +244,10 @@ INSERT
     ]
 
 2.2) INSERT new role with empty permissions:
-    ***
+    [
+    "dispatching change event to onRoleInsert handler",
+    "response from handler: []"
+    ]
 
 3) INSERT new role with name and some permissions for collection that does NOT exist (Homeowner, can read activities) ...
     [
