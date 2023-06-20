@@ -48,7 +48,10 @@ const buildHttpClient = async () => {
         return context.http.post({ url, body, encodeBodyAsJSON: true }).then(parse);
     };
     const { access_token: tkn } = await adminLogin();
-    const withAuth = headers => (headers.Authorization = [`Bearer ${tkn}`], headers);
+    const withAuth = headers => {
+        headers.Authorization = [`Bearer ${tkn}`];
+        return headers;
+    };
     const client = {
         post: async (url, body, headers = {}) => context.http
             .post({ url, body, headers: withAuth(headers), encodeBodyAsJSON: true })
