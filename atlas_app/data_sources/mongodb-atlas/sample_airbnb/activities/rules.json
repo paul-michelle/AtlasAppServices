@@ -31,6 +31,21 @@
             "insert": false,
             "delete": false,
             "search": false
+        },
+        {
+            "name": "Importarere",
+            "apply_when": {
+                "%%user.custom_data.role": "Importarere"
+            },
+            "document_filters": {
+                "write": false,
+                "read": true
+            },
+            "read": true,
+            "write": false,
+            "insert": false,
+            "delete": false,
+            "search": false
         }
     ]
 }
