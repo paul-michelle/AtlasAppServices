@@ -171,6 +171,7 @@ const onRoleUpdate = async changeEvent => {
         console.log(`processing updated field: ${key}`);
         if (!key.startsWith("permissions")) continue;
         const collName = key.split(".")[1];
+        if (collName === undefined) continue;
         const collRolePerms = changeEvent.fullDocument.permissions[collName];
         const task = updateRule(collName, roleName, collRolePerms)
             .then(res => ({ collName, roleName, ...res }))
