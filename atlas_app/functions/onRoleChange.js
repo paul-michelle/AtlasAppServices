@@ -67,13 +67,13 @@ const transport = {
 };
 
 const utils = {
-  toString: o => JSON.stringify(o),
-  isEmpty: o => {
-    if (typeof o === "string") return o === "";
-    if (Array.isArray(o)) return o.length === 0;
-    if (typeof o === "object") return Object.keys(o).length === 0;
-    throw new Error("not supported");
-  },
+    toString: o => JSON.stringify(o),
+    isEmpty: o => {
+        if (typeof o === "string") return o === "";
+        if (Array.isArray(o)) return o.length === 0;
+        if (typeof o === "object") return Object.keys(o).length === 0;
+        throw new Error("not supported");
+    },
 };
 
 const adminLogin = async (username = '', apiKey = '') => {
@@ -163,16 +163,7 @@ const saveRule = async (rule, token = '') => {
     return resp;
 };
 
-const deleteRule = async ({ _id }, token = '') => {
-    if (token === '') {
-        const { access_token } = await adminLogin();
-        token = access_token;
-    }
-    const url = `${config.ADMIN_API.RULES}/${_id}`;
-    const headers = { "Authorization": [`Bearer ${token}`] };
-    const resp = await transport.delete({ url, headers });
-    return resp;
-};
+const deleteRule = async ({ _id }) => httpClient.delete(`${config.ADMIN_API.RULES}/${_id}`);
 
 const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
     const insertRuleOrReportThat = async msg => {
