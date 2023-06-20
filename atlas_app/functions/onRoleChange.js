@@ -18,6 +18,35 @@ const buildConfig = async () => {
     return config;
 };
 
+const buildHttpClient = async () => {
+    const parse = resp => JSON.parse(resp.body.text());
+    const adminLogin = async () => {
+        const url = config.ADMIN_API.LOGIN;
+        const body = {
+            username: config.ADMIN_PUBLIC_API_KEY,
+            apiKey: config.ADMIN_PRIVATE_API_KEY
+        };
+        return context.http.post({ url, body, encodeBodyAsJSON: true }).then(parse);
+    };
+    const { access_token: tkn } = await adminLogin();
+    const withAuth = headers => (headers.Authorization = [`Bearer ${tkn}`], headers);
+    const client = {
+        post: async (url, body, headers = {}) => context.http
+            .post({ url, body, headers: withAuth(headers), encodeBodyAsJSON: true })
+            .then(parse),
+        put: async (url, body, headers = {}) => context.http
+            .put({ url, body, headers: withAuth(headers), encodeBodyAsJSON: true })
+            .then(parse),
+        get: async (url, headers = {}) => context.http
+            .get({ url, headers: withAuth(headers) })
+            .then(parse),
+        delete: async (url, headers = {}) => context.http
+            .delete({ url, headers: withAuth(headers) })
+            .then(parse),
+    };
+    return client;
+};
+
 const transport = {
     post: async ({ url, body, headers = {} }) => context.http
         .post({ url, body, headers, encodeBodyAsJSON: true })
@@ -37,46 +66,14 @@ const transport = {
         .then(JSON.parse),
 };
 
-const buildHttpClient = async () => {
-    const parse = resp => JSON.parse(resp.body.text());
-    const adminLogin = async () => {
-        const url = config.ADMIN_API.LOGIN;
-        const body = {
-            username: config.ADMIN_PUBLIC_API_KEY,
-            apiKey: config.ADMIN_PRIVATE_API_KEY
-        };
-        return context.http.post({ url, body, encodeBodyAsJSON: true }).then(parse);
-    };
-    const { access_token: tkn } = await adminLogin();
-    const withAuth = headers => {
-        headers.Authorization = [`Bearer ${tkn}`];
-        return headers;
-    };
-    const client = {
-        post: async (url, body, headers = {}) => context.http
-            .post({ url, body, headers: withAuth(headers), encodeBodyAsJSON: true })
-            .then(parse),
-        put: async (url, body, headers = {}) => context.http
-            .put({ url, body, headers: withAuth(headers), encodeBodyAsJSON: true })
-            .then(parse),
-        get: async (url, headers = {}) => context.http
-            .get({ url, headers: withAuth(headers) })
-            .then(parse),
-        delete: async (url, headers = {}) => context.http
-            .delete({ url, headers: withAuth(headers) })
-            .then(parse),
-    };
-    return client;
-};
-
 const utils = {
-    toString: o => JSON.stringify(o),
-    isEmpty: o => {
-        if (typeof o === "string") return o === "";
-        if (Array.isArray(o)) return o.length === 0;
-        if (typeof o === "object") return Object.keys(o).length === 0;
-        throw new Error("not supported");
-    },
+  toString: o => JSON.stringify(o),
+  isEmpty: o => {
+    if (typeof o === "string") return o === "";
+    if (Array.isArray(o)) return o.length === 0;
+    if (typeof o === "object") return Object.keys(o).length === 0;
+    throw new Error("not supported");
+  },
 };
 
 const adminLogin = async (username = '', apiKey = '') => {
@@ -88,9 +85,19 @@ const adminLogin = async (username = '', apiKey = '') => {
     return transport.post({ url, body });
 };
 
+const getAllRules = async (token = '') => {
+    if (token === '') {
+        const { access_token } = await adminLogin();
+        token = access_token;
+    }
+    return transport.get({
+        url: config.ADMIN_API.RULES,
+        headers: { "Authorization": [`Bearer ${token}`] }
+    });
+};
 
-const getRuleId = async collName => {
-    const rules = await httpClient.get(config.ADMIN_API.RULES);
+const getRuleId = async (collName, token) => {
+    const rules = await getAllRules(token);
     if (!rules) return -1;
     const rule = rules.filter(
         rule => rule.database === config.DATABASE && rule.collection === collName
@@ -99,9 +106,10 @@ const getRuleId = async collName => {
     return rule._id || -1;
 };
 
-const getRuleById = async ruleId => {
+const getRuleById = async (ruleId, token) => {
     const url = `${config.ADMIN_API.RULES}/${ruleId}`;
-    const resp = await httpClient.get(url);
+    const headers = { "Authorization": [`Bearer ${token}`] };
+    const resp = await transport.get({ url, headers });
     return resp.error ? null : resp;
 };
 
@@ -130,11 +138,16 @@ const buildRole = (roleName, collRolePerms) => {
 
 const buildRule = (roles, collection, database = config.DATABASE) => ({ roles, database, collection });
 
-const insertRule = async rule => {
-    const resp = await httpClient.post(
-        config.ADMIN_API.RULES,
-        rule,
-    );
+const insertRule = async (rule, token = '') => {
+    if (token === '') {
+        const { access_token } = await adminLogin();
+        token = access_token;
+    }
+    const resp = await transport.post({
+        url: config.ADMIN_API.RULES,
+        body: rule,
+        headers: { "Authorization": [`Bearer ${token}`] },
+    });
     return resp;
 };
 
@@ -160,16 +173,26 @@ const updateRoleInRule = (rule, roleName, collRolePerms) => {
     return rule;
 };
 
-const saveRule = async rule => {
+const saveRule = async (rule, token = '') => {
+    if (token === '') {
+        const { access_token } = await adminLogin();
+        token = access_token;
+    }
     const url = `${config.ADMIN_API.RULES}/${rule._id}`;
-    const resp = await httpClient.put(url, rule);
+    const headers = { "Authorization": [`Bearer ${token}`] };
+    const resp = await transport.put({ url, body: rule, headers });
     console.log(JSON.stringify(resp));
     return resp;
 };
 
-const deleteRule = async ({ _id }) => {
+const deleteRule = async ({ _id }, token = '') => {
+    if (token === '') {
+        const { access_token } = await adminLogin();
+        token = access_token;
+    }
     const url = `${config.ADMIN_API.RULES}/${_id}`;
-    const resp = await httpClient.delete(url);
+    const headers = { "Authorization": [`Bearer ${token}`] };
+    const resp = await transport.delete({ url, headers });
     return resp;
 };
 
@@ -178,13 +201,13 @@ const updateRule = async (collName, roleName, collRolePerms, upsert = true) => {
         if (!upsert) return { result: msg };
         const role = buildRole(roleName, collRolePerms);
         const newRule = buildRule([role], collName);
-        const result = await insertRule(newRule);
+        const result = await insertRule(newRule, token);
         return { result };
     };
-    // const { access_token: token } = await adminLogin();
-    const ruleId = await getRuleId(collName);
+    const { access_token: token } = await adminLogin();
+    const ruleId = await getRuleId(collName, token);
     if (ruleId === -1) return insertRuleOrReportThat("rule not found");
-    const rule = await getRuleById(ruleId);
+    const rule = await getRuleById(ruleId, token);
     if (rule === null) return insertRuleOrReportThat("rule was deleted");
     const updatedRule = updateRoleInRule(rule, roleName, collRolePerms);
     const action = utils.isEmpty(updatedRule.roles) ? deleteRule : saveRule;
@@ -202,7 +225,7 @@ const onRoleInsert = async changeEvent => {
     for (const [collName, collRolePerms] of Object.entries(permissions)) {
         const task = updateRule(collName, roleName, collRolePerms)
             .then(res => ({ collName, roleName, ...res }))
-            .catch(error => ({ collName, roleName, error }));
+            .catch(err => ({ collName, roleName, result: err }));
         tasks.push(task);
     }
 
