@@ -10,5 +10,9 @@
     {
         "name": "onRoleChange",
         "private": true
+    },
+    {
+        "name": "myFunc",
+        "private": true
     }
 ]
