@@ -10,7 +10,22 @@
         "database": "sample_airbnb",
         "collection": "users",
         "service_name": "mongodb-atlas",
-        "match": {},
+        "match": {
+            "$or": [
+                {
+                    "updateDescription.updatedFields.role": {
+                        "$exists": true
+                    }
+                },
+                {
+                    "updateDescription.removedFields": {
+                        "$in": [
+                            "role"
+                        ]
+                    }
+                }
+            ]
+        },
         "project": {},
         "full_document": false,
         "full_document_before_change": false,
