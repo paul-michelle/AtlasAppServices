@@ -23,6 +23,12 @@
                             "role"
                         ]
                     }
+                },
+                {
+                    "operationType": "insert",
+                    "fullDocument.role": {
+                        "$exists": true
+                    }
                 }
             ]
         },
